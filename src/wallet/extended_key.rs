@@ -578,8 +578,14 @@ mod tests {
 
         // Errors
         assert!(
-            ExtendedKey::new_public_key(Network::Testnet, 111, &[0, 1, 2], 44, &[5; 32], &[6; 33],)
-                .is_err()
+            ExtendedKey::new_public_key(
+                Network::Testnet,
+                111,
+                &[0, 1, 2],
+                44,
+                &[5; 32],
+                &[6; 33],
+            ).is_err()
         );
         assert!(
             ExtendedKey::new_public_key(
