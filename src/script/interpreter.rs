@@ -614,25 +614,25 @@ pub fn eval<T: Checker>(script: &[u8], checker: &mut T) -> Result<()> {
             }
             OP_SHA1 => {
                 check_stack_size(1, &stack)?;
-                let mut v = stack.pop().unwrap();
+                let v = stack.pop().unwrap();
                 let result = digest(&SHA1, &v);
                 stack.push(result.as_ref().to_vec());
             }
             OP_SHA256 => {
                 check_stack_size(1, &stack)?;
-                let mut v = stack.pop().unwrap();
+                let v = stack.pop().unwrap();
                 let result = digest(&SHA256, &v);
                 stack.push(result.as_ref().to_vec());
             }
             OP_HASH160 => {
                 check_stack_size(1, &stack)?;
-                let mut v = stack.pop().unwrap();
+                let v = stack.pop().unwrap();
                 let hash160 = hash160(&v).0;
                 stack.push(hash160.to_vec());
             }
             OP_HASH256 => {
                 check_stack_size(1, &stack)?;
-                let mut v = stack.pop().unwrap();
+                let v = stack.pop().unwrap();
                 let result = sha256d(&v).0;
                 stack.push(result.as_ref().to_vec());
             }

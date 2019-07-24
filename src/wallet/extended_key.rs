@@ -419,9 +419,9 @@ pub fn derive_extended_key(master: &ExtendedKey, path: &str) -> Result<ExtendedK
 
         let index = if part.ends_with("'") || part.ends_with("h") || part.ends_with("H") {
             let index: u32 = part
-                .trim_right_matches("'")
-                .trim_right_matches("h")
-                .trim_right_matches("H")
+                .trim_end_matches("'")
+                .trim_end_matches("h")
+                .trim_end_matches("H")
                 .parse()?;
             if index >= HARDENED_KEY {
                 let msg = "Key index is already hardened";
