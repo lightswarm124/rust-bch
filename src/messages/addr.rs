@@ -3,7 +3,7 @@ use messages::node_addr_ex::NodeAddrEx;
 use std::fmt;
 use std::io;
 use std::io::{Read, Write};
-use util::{var_int, Error, Result, Serializable};
+use crate::util::{var_int, Error, Result, Serializable};
 
 /// Maximum number of addresses allowed in an Addr message
 const MAX_ADDR_COUNT: u64 = 1000;

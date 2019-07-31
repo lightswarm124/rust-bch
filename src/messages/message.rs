@@ -17,7 +17,7 @@ use ring::digest;
 use std::fmt;
 use std::io;
 use std::io::{Cursor, Read, Write};
-use util::{Error, Result, Serializable};
+use crate::util::{Error, Result, Serializable};
 
 /// Checksum to use when there is an empty payload
 pub const NO_CHECKSUM: [u8; 4] = [0x5d, 0xf6, 0xe0, 0xe2];
@@ -517,7 +517,7 @@ mod tests {
     use std::io::Cursor;
     use std::net::Ipv6Addr;
     use std::time::UNIX_EPOCH;
-    use util::{secs_since, Amount, BloomFilter, Hash256};
+    use crate::util::{secs_since, Amount, BloomFilter, Hash256};
 
     #[test]
     fn write_read() {

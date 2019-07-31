@@ -3,7 +3,7 @@ use messages::message::Payload;
 use std::fmt;
 use std::io;
 use std::io::{Read, Write};
-use util::{var_int, Error, Result, Serializable};
+use crate::util::{var_int, Error, Result, Serializable};
 
 /// Maximum number of objects in an inv message
 pub const MAX_INV_ENTRIES: usize = 50000;
@@ -62,7 +62,7 @@ mod tests {
     use super::*;
     use messages::inv_vect::InvVectType;
     use std::io::Cursor;
-    use util::Hash256;
+    use crate::util::Hash256;
 
     #[test]
     fn write_read() {

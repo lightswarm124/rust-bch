@@ -16,10 +16,10 @@
 //! script.eval(&mut TransactionlessChecker {}).unwrap();
 //! ```
 
+use crate::script::op_codes::*;
+use crate::util::Result;
 use hex;
-use script::op_codes::*;
 use std::fmt;
-use util::Result;
 
 mod checker;
 mod interpreter;

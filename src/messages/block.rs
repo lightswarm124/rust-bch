@@ -4,7 +4,7 @@ use std::collections::{HashSet, VecDeque};
 use std::fmt;
 use std::io;
 use std::io::{Read, Write};
-use util::{sha256d, var_int, Error, Hash256, Result, Serializable};
+use crate::util::{sha256d, var_int, Error, Hash256, Result, Serializable};
 
 /// Block height that Bitcoin Cash forked from BTC
 pub const BITCOIN_CASH_FORK_HEIGHT: i32 = 478558;
@@ -162,7 +162,7 @@ mod tests {
     use messages::{OutPoint, TxIn, TxOut};
     use script::Script;
     use std::io::Cursor;
-    use util::{Amount, Hash256};
+    use crate::util::{Amount, Hash256};
 
     #[test]
     fn read_bytes() {

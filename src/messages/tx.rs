@@ -7,7 +7,7 @@ use std::fmt;
 use std::io;
 use std::io::{Read, Write};
 use transaction::sighash::SigHashCache;
-use util::{sha256d, var_int, Error, Hash256, Result, Serializable};
+use crate::util::{sha256d, var_int, Error, Hash256, Result, Serializable};
 
 /// Maximum number of satoshis possible
 pub const MAX_SATOSHIS: i64 = 21_000_000 * 100_000_000;
@@ -212,7 +212,7 @@ mod tests {
     use super::*;
     use messages::OutPoint;
     use std::io::Cursor;
-    use util::{Amount, Hash256};
+    use crate::util::{Amount, Hash256};
 
     #[test]
     fn write_read() {

@@ -1,7 +1,7 @@
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use std::io;
 use std::io::{Read, Write};
-use util::{Error, Hash256, Result, Serializable};
+use crate::util::{Error, Hash256, Result, Serializable};
 
 /// Inventory vector type
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

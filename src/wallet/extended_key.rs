@@ -1,5 +1,6 @@
+use crate::network::Network;
+use crate::util::{hash160, sha256d, Error, Result, Serializable};
 use byteorder::{BigEndian, WriteBytesExt};
-use network::Network;
 use ring::digest::SHA512;
 use ring::hmac;
 use rust_base58::base58::{FromBase58, ToBase58};
@@ -8,7 +9,6 @@ use std::fmt;
 use std::io;
 use std::io::{Cursor, Read, Write};
 use std::slice;
-use util::{hash160, sha256d, Error, Result, Serializable};
 
 /// Maximum private key value (exclusive)
 const SECP256K1_CURVE_ORDER: [u8; 32] = [
@@ -186,7 +186,7 @@ impl ExtendedKey {
             }
             ExtendedKeyType::Private => {
                 let secp = Secp256k1::signing_only();
-                let secp_secret_key = SecretKey::from_slice(&secp, &self.0[46..])?;
+                let secp_secret_key = SecretKey::from_slice(&self.0[46..])?;
                 let secp_public_key = PublicKey::from_secret_key(&secp, &secp_secret_key);
                 Ok(secp_public_key.serialize())
             }
@@ -220,7 +220,7 @@ impl ExtendedKey {
             ExtendedKeyType::Private => {
                 let private_key = &self.0[46..];
                 let secp = Secp256k1::signing_only();
-                let secp_secret_key = SecretKey::from_slice(&secp, &private_key)?;
+                let secp_secret_key = SecretKey::from_slice(&private_key)?;
                 let secp_public_key = PublicKey::from_secret_key(&secp, &secp_secret_key);
                 let public_key = secp_public_key.serialize();
 
@@ -250,7 +250,7 @@ impl ExtendedKey {
 
         let secp = Secp256k1::signing_only();
         let private_key = &self.0[46..];
-        let secp_par_secret_key = SecretKey::from_slice(&secp, &private_key)?;
+        let secp_par_secret_key = SecretKey::from_slice(&private_key)?;
         let chain_code = &self.0[13..45];
         let key = hmac::SigningKey::new(&SHA512, chain_code);
 
@@ -278,8 +278,8 @@ impl ExtendedKey {
             return Err(Error::IllegalState(msg));
         }
 
-        let mut secp_child_secret_key = SecretKey::from_slice(&secp, &hmac.as_ref()[..32])?;
-        secp_child_secret_key.add_assign(&secp, &secp_par_secret_key)?;
+        let mut secp_child_secret_key = SecretKey::from_slice(&hmac.as_ref()[..32])?;
+        secp_child_secret_key.add_assign(&private_key)?;
 
         let child_chain_code = &hmac.as_ref()[32..];
         let fingerprint = self.fingerprint()?;
@@ -325,10 +325,10 @@ impl ExtendedKey {
         }
 
         let secp = Secp256k1::signing_only();
-        let child_offset = SecretKey::from_slice(&secp, &hmac.as_ref()[..32])?;
+        let child_offset = SecretKey::from_slice(&hmac.as_ref()[..32])?;
         let child_offset = PublicKey::from_secret_key(&secp, &child_offset);
-        let secp_par_public_key = PublicKey::from_slice(&secp, &public_key)?;
-        let secp_child_public_key = secp_par_public_key.combine(&secp, &child_offset)?;
+        let secp_par_public_key = PublicKey::from_slice(&public_key)?;
+        let secp_child_public_key = secp_par_public_key.combine(&child_offset)?;
         let child_public_key = secp_child_public_key.serialize();
 
         let child_chain_code = &hmac.as_ref()[32..];
@@ -565,7 +565,8 @@ mod tests {
             44,
             &[5; 32],
             &[6; 33],
-        ).unwrap();
+        )
+        .unwrap();
         assert!(key.network().unwrap() == Network::Testnet);
         assert!(key.key_type().unwrap() == ExtendedKeyType::Public);
         assert!(key.depth() == 111);
@@ -577,36 +578,33 @@ mod tests {
         );
 
         // Errors
-        assert!(
-            ExtendedKey::new_public_key(
-                Network::Testnet,
-                111,
-                &[0, 1, 2],
-                44,
-                &[5; 32],
-                &[6; 33],
-            ).is_err()
-        );
-        assert!(
-            ExtendedKey::new_public_key(
-                Network::Testnet,
-                111,
-                &[0, 1, 2, 3],
-                44,
-                &[5; 31],
-                &[6; 33],
-            ).is_err()
-        );
-        assert!(
-            ExtendedKey::new_public_key(
-                Network::Testnet,
-                111,
-                &[0, 1, 2, 3],
-                44,
-                &[5; 32],
-                &[6; 32],
-            ).is_err()
-        );
+        assert!(ExtendedKey::new_public_key(
+            Network::Testnet,
+            111,
+            &[0, 1, 2],
+            44,
+            &[5; 32],
+            &[6; 33],
+        )
+        .is_err());
+        assert!(ExtendedKey::new_public_key(
+            Network::Testnet,
+            111,
+            &[0, 1, 2, 3],
+            44,
+            &[5; 31],
+            &[6; 33],
+        )
+        .is_err());
+        assert!(ExtendedKey::new_public_key(
+            Network::Testnet,
+            111,
+            &[0, 1, 2, 3],
+            44,
+            &[5; 32],
+            &[6; 32],
+        )
+        .is_err());
     }
 
     #[test]
@@ -618,7 +616,8 @@ mod tests {
             HARDENED_KEY + 100,
             &[7; 32],
             &[8; 32],
-        ).unwrap();
+        )
+        .unwrap();
         assert!(key.network().unwrap() == Network::Mainnet);
         assert!(key.key_type().unwrap() == ExtendedKeyType::Private);
         assert!(key.depth() == 255);
@@ -628,36 +627,33 @@ mod tests {
         assert!(key.private_key().unwrap() == [8_u8; 32]);
 
         // Errors
-        assert!(
-            ExtendedKey::new_private_key(
-                Network::Mainnet,
-                255,
-                &[4, 5, 6],
-                HARDENED_KEY + 100,
-                &[7; 32],
-                &[8; 32],
-            ).is_err()
-        );
-        assert!(
-            ExtendedKey::new_private_key(
-                Network::Mainnet,
-                255,
-                &[4, 5, 6, 7],
-                HARDENED_KEY + 100,
-                &[7],
-                &[8; 32],
-            ).is_err()
-        );
-        assert!(
-            ExtendedKey::new_private_key(
-                Network::Mainnet,
-                255,
-                &[4, 5, 6, 7],
-                HARDENED_KEY + 100,
-                &[7; 32],
-                &[8; 33],
-            ).is_err()
-        );
+        assert!(ExtendedKey::new_private_key(
+            Network::Mainnet,
+            255,
+            &[4, 5, 6],
+            HARDENED_KEY + 100,
+            &[7; 32],
+            &[8; 32],
+        )
+        .is_err());
+        assert!(ExtendedKey::new_private_key(
+            Network::Mainnet,
+            255,
+            &[4, 5, 6, 7],
+            HARDENED_KEY + 100,
+            &[7],
+            &[8; 32],
+        )
+        .is_err());
+        assert!(ExtendedKey::new_private_key(
+            Network::Mainnet,
+            255,
+            &[4, 5, 6, 7],
+            HARDENED_KEY + 100,
+            &[7; 32],
+            &[8; 33],
+        )
+        .is_err());
     }
 
     #[test]
@@ -687,6 +683,7 @@ mod tests {
             0,
             &hmac.as_ref()[32..],
             &hmac.as_ref()[0..32],
-        ).unwrap()
+        )
+        .unwrap()
     }
 }

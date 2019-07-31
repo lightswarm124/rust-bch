@@ -3,7 +3,7 @@ use messages::message::Payload;
 use std::fmt;
 use std::io;
 use std::io::{Read, Write};
-use util::{var_int, Error, Result, Serializable};
+use crate::util::{var_int, Error, Result, Serializable};
 
 /// Maximum size of a data element in the FilterAdd message
 pub const MAX_FILTER_ADD_DATA_SIZE: usize = 520;

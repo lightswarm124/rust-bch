@@ -1,7 +1,7 @@
+use crate::network::Network;
+use crate::util::{sha256d, Error, Hash160, Result};
 use address::AddressType;
-use network::Network;
 use rust_base58::base58::{FromBase58, ToBase58};
-use util::{sha256d, Error, Hash160, Result};
 
 /// Converts a public key hash to its legacy address
 pub fn legacyaddr_encode(hash160: &Hash160, addr_type: AddressType, network: Network) -> String {
@@ -63,8 +63,8 @@ pub fn legacyaddr_decode(input: &str, network: Network) -> Result<(Hash160, Addr
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util::hash160;
     use hex;
-    use util::hash160;
 
     #[test]
     fn to_legacyaddr() {

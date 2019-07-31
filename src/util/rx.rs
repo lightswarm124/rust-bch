@@ -1,9 +1,9 @@
 //! Lightweight reactive library
 
+use crate::util::future::{Future, FutureProvider};
+use crate::util::{Error, Result};
 use std::sync::{Arc, RwLock, TryLockError, Weak};
 use std::time::Duration;
-use util::future::{Future, FutureProvider};
-use util::{Error, Result};
 
 /// Observes an event of type T
 pub trait Observer<T>: Sync + Send {

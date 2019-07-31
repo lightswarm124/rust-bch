@@ -1,6 +1,6 @@
 use address::AddressType;
 use network::Network;
-use util::{Error, Result};
+use crate::util::{Error, Result};
 
 // Cashaddr lookup tables to convert a 5-bit number to an ascii character and back
 const CHARSET: &[u8; 32] = b"qpzry9x8gf2tvdw0s3jn54khce6mua7l";
